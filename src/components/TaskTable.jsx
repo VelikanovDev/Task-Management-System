@@ -12,12 +12,6 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 const TaskTable = ({tasks}) => {
     return (
         <TableContainer component={Paper} sx={{ minWidth: 650, maxWidth: 1000, margin: '0 auto'}}>
-            <Button
-                startIcon={<AddCircleIcon />}
-                onClick={() => console.log("add")}
-            >
-                New Task
-            </Button>
             <Table aria-label="simple table">
                 <TableHead>
                     <TableRow>

@@ -1,9 +1,16 @@
 import './App.css';
 import TaskTable from "./components/TaskTable";
+import MyModal from "./components/UI/modal/MyModal";
+import TaskForm from "./components/TaskForm";
+import * as React from "react";
+import {useState} from "react";
+import {Button} from "@mui/material";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 function App() {
-
-    const data = [
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [data, setData] = useState([
         {
             "id": "1",
             "isDone": true,
@@ -69,18 +76,37 @@ function App() {
         },
         {
             "id": "8",
-            "isDone": false,
+            "isDone": true,
             "name": "Optimize front-end performance",
             "assignedTo": "Hilda",
             "progress": "60%",
             "priority": "High",
             "due": "2024-04-22"
         }
-    ]
+    ])
+
+    const handleCreateTask = (newTask) => {
+        setData((prevData) => {
+            return [...prevData, newTask];
+        });
+    }
 
     return (
         <div className="App">
             <h1>Task Management System</h1>
+            <MyModal visible={modalVisible} setVisible={setModalVisible}>
+                <TaskForm create={handleCreateTask}/>
+            </MyModal>
+            <Button
+                startIcon={<AddCircleIcon />}
+                onClick={() => {
+                        setSelectedTask(null);
+                        setModalVisible(true);
+                    }
+                }
+            >
+                New Task
+            </Button>
             <header>
                 <TaskTable tasks={data} />
             </header>
