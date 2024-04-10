@@ -4,7 +4,7 @@ import MyModal from "./components/UI/modal/MyModal";
 import TaskForm from "./components/TaskForm";
 import * as React from "react";
 import {useState} from "react";
-import {Button} from "@mui/material";
+import {Box, Button, ButtonGroup} from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 function App() {
@@ -14,101 +14,105 @@ function App() {
         {
             "id": "1",
             "isDone": true,
-            "name": "Implement UI",
+            "description": "Implement UI",
             "assignedTo": "Alice",
-            "progress": "95%",
+            "assignedBy": "Bob",
             "priority": "High",
             "due": "2024-04-12"
         },
         {
             "id": "2",
             "isDone": false,
-            "name": "Fix backend bugs",
+            "description": "Fix backend bugs",
             "assignedTo": "Bob",
-            "progress": "75%",
+            "assignedBy": "Alice",
             "priority": "Medium",
             "due": "2024-04-15"
         },
         {
             "id": "3",
             "isDone": false,
-            "name": "Write documentation",
+            "description": "Write documentation",
             "assignedTo": "Charlie",
-            "progress": "40%",
+            "assignedBy": "Alice",
             "priority": "Low",
             "due": "2024-04-20"
         },
         {
             "id": "4",
             "isDone": false,
-            "name": "Refactor service layer",
+            "description": "Refactor service layer",
             "assignedTo": "Dana",
-            "progress": "30%",
+            "assignedBy": "Alice",
             "priority": "Medium",
             "due": "2024-04-25"
         },
         {
             "id": "5",
             "isDone": true,
-            "name": "Update API endpoints",
+            "description": "Update API endpoints",
             "assignedTo": "Evan",
-            "progress": "100%",
+            "assignedBy": "Alice",
             "priority": "High",
             "due": "2024-04-18"
-        },
-        {
-            "id": "6",
-            "isDone": false,
-            "name": "Improve database schema",
-            "assignedTo": "Fiona",
-            "progress": "20%",
-            "priority": "High",
-            "due": "2024-04-30"
-        },
-        {
-            "id": "7",
-            "isDone": false,
-            "name": "Set up CI/CD",
-            "assignedTo": "George",
-            "progress": "50%",
-            "priority": "Medium",
-            "due": "2024-05-05"
-        },
-        {
-            "id": "8",
-            "isDone": true,
-            "name": "Optimize front-end performance",
-            "assignedTo": "Hilda",
-            "progress": "60%",
-            "priority": "High",
-            "due": "2024-04-22"
         }
-    ])
+    ]);
+    const [filter, setFilter] = useState('all'); // 'all', 'assignedByMe', 'myTasks'
+
+    const filteredData = () => {
+        if (filter === 'all') {
+            return data;
+        } else if (filter === 'assignedByMe') {
+            // Assuming tasks not assigned to Alice are assigned by Alice
+            return data.filter(task => task.assignedTo !== "Alice");
+        } else if (filter === 'myTasks') {
+            return data.filter(task => task.assignedTo === "Alice");
+        }
+    };
 
     const handleCreateTask = (newTask) => {
         setData((prevData) => {
             return [...prevData, newTask];
         });
-    }
+
+        setModalVisible(false);
+    };
+
+    const handleEditTask = (id) => {
+        const task = data.find(t => t.id === id);
+        setSelectedTask(task);
+        setModalVisible(true);
+    };
+
+    const handleDeleteTask = (id) => {
+        setData(data.filter(task => task.id !== id));
+    };
 
     return (
         <div className="App">
             <h1>Task Management System</h1>
+            <ButtonGroup variant="contained">
+                <Button variant="contained" onClick={() => setFilter('all')}>All Tasks</Button>
+                <Button variant="contained" onClick={() => setFilter('assignedByMe')}>Assigned By Me</Button>
+                <Button variant="contained" onClick={() => setFilter('myTasks')}>My Tasks</Button>
+            </ButtonGroup>
             <MyModal visible={modalVisible} setVisible={setModalVisible}>
                 <TaskForm create={handleCreateTask}/>
             </MyModal>
-            <Button
-                startIcon={<AddCircleIcon />}
-                onClick={() => {
+            <Box mt={2} mb={2}>
+                <Button
+                    variant="contained"
+                    startIcon={<AddCircleIcon />}
+                    onClick={() => {
                         setSelectedTask(null);
                         setModalVisible(true);
-                    }
-                }
-            >
-                New Task
-            </Button>
+                    }}
+                >
+                    New Task
+                </Button>
+            </Box>
             <header>
-                <TaskTable tasks={data} />
+                <TaskTable tasks={filteredData()} filter={filter} />
             </header>
         </div>
     );
