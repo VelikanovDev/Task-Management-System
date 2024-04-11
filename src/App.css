@@ -1,3 +1,19 @@
 .App {
   text-align: center;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.authForm {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.loggedInUser {
+  margin-bottom: 20px;
+}
+
+.loggedInUser p {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 18px;
 }
