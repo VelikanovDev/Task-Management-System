@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+/.idea/modules.xml
+/.idea/prettier.xml
+/.idea/task-management-system.iml
+/.idea/vcs.xml
+/.idea/.gitignore
