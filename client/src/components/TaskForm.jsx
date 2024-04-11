@@ -14,7 +14,6 @@ import dayjs from "dayjs";
 
 const TaskForm = ({ create, update, task }) => {
   const initialTaskState = {
-    id: "",
     description: "",
     isDone: false,
     assignedTo: "",
@@ -31,7 +30,7 @@ const TaskForm = ({ create, update, task }) => {
       setNewTask({
         description: task.description,
         assignedTo: task.assignedTo,
-        progress: task.progress,
+        assignedBy: task.assignedBy,
         priority: task.priority,
         due: task.due,
       });
@@ -57,7 +56,6 @@ const TaskForm = ({ create, update, task }) => {
     }
 
     const updatedTask = {
-      id: 99,
       isDone: false,
       description: newTask.description,
       assignedTo: newTask.assignedTo,
