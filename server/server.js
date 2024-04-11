@@ -5,12 +5,14 @@ const TaskSchema = require("./models/task");
 const UserSchema = require("./models/user");
 const seedTasksDB = require("./seeds/seed-tasks");
 const seedUsersDB = require("./seeds/seed-users");
+const taskRouter = require("./routes/tasks");
 
 const app = express();
 const PORT = 3001;
 
 app.use(express.json());
 app.use(cors());
+app.use("/api", taskRouter); // Mount the router on the `/api` path
 
 // Connect to MongoDB
 mongoose
@@ -41,16 +43,6 @@ async function checkAndSeedDatabase() {
     await seedUsersDB();
   }
 }
-
-// Routes
-app.get("/tasks", async (req, res) => {
-  try {
-    const tasks = await TaskSchema.find();
-    res.json(tasks);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-});
 
 // Start the server
 app.listen(PORT, () => {
