@@ -1,7 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+/client/build/
 # dependencies
-/node_modules
+**/node_modules/
 /.pnp
 .pnp.js
 
@@ -26,3 +27,4 @@ yarn-error.log*
 /.idea/task-management-system.iml
 /.idea/vcs.xml
 /.idea/.gitignore
+/client/build/
