@@ -35,7 +35,7 @@ const TaskTable = ({tasks, filter}) => {
                         <TableRow key={task.id} align="center">
                             { filter !== "assignedByMe"
                                 && (<TableCell align="center">
-                                    <input type={"checkbox"}/>
+                                    <input type={"checkbox"} disabled={filter === "all"}/>
                                 </TableCell>)
                             }
                             <TableCell align="center">{task.description}</TableCell>
