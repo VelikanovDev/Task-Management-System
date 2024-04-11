@@ -1,81 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, ButtonGroup } from "@mui/material";
-import MyModal from "../UI/modal/MyModal";
-import TaskForm from "../TaskForm";
+import MyModal from "../components/UI/modal/MyModal";
+import TaskForm from "../components/TaskForm";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import TaskTable from "../TaskTable";
+import TaskTable from "../components/TaskTable";
 import { useNavigate } from "react-router-dom";
+import { createTask, deleteTask, fetchTasks } from "../services/TaskService";
 
 const HomePage = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
-  const [data, setData] = useState([
-    {
-      id: "1",
-      isDone: true,
-      description: "Implement UI",
-      assignedTo: "Alice",
-      assignedBy: "Bob",
-      priority: "High",
-      due: "2024-04-12",
-    },
-    {
-      id: "2",
-      isDone: false,
-      description: "Fix backend bugs",
-      assignedTo: "Bob",
-      assignedBy: "Alice",
-      priority: "Medium",
-      due: "2024-04-15",
-    },
-    {
-      id: "3",
-      isDone: false,
-      description: "Write documentation",
-      assignedTo: "Charlie",
-      assignedBy: "Alice",
-      priority: "Low",
-      due: "2024-04-20",
-    },
-    {
-      id: "4",
-      isDone: false,
-      description: "Refactor service layer",
-      assignedTo: "Dana",
-      assignedBy: "Alice",
-      priority: "Medium",
-      due: "2024-04-25",
-    },
-    {
-      id: "5",
-      isDone: true,
-      description: "Update API endpoints",
-      assignedTo: "Evan",
-      assignedBy: "Alice",
-      priority: "High",
-      due: "2024-04-18",
-    },
-  ]);
+  const [refreshTasks, setRefreshTasks] = useState(false);
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    fetchTasks()
+      .then((res) => {
+        setTasks(res);
+        setRefreshTasks(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch tasks:", err);
+      });
+  }, [refreshTasks]);
+
   const [filter, setFilter] = useState("all"); // 'all', 'assignedByMe', 'myTasks'
   const navigate = useNavigate();
 
   const filteredData = () => {
     if (filter === "all") {
-      return data;
+      return tasks;
     } else if (filter === "assignedByMe") {
       // Assuming tasks not assigned to Alice are assigned by Alice
-      return data.filter((task) => task.assignedTo !== "Alice");
+      return tasks.filter((task) => task.assignedTo !== "Alice");
     } else if (filter === "myTasks") {
-      return data.filter((task) => task.assignedTo === "Alice");
+      return tasks.filter((task) => task.assignedTo === "Alice");
     }
   };
 
   const handleCreateTask = (newTask) => {
-    setData((prevData) => {
-      return [...prevData, newTask];
-    });
-
-    setModalVisible(false);
+    // setTasks((prevData) => {
+    //   return [...prevData, newTask];
+    // });
+    createTask(newTask).then(() => setModalVisible(false));
+    setRefreshTasks(true);
+    // setModalVisible(false);
   };
 
   // const handleEditTask = (id) => {
@@ -84,9 +53,9 @@ const HomePage = () => {
   //     setModalVisible(true);
   // };
   //
-  // const handleDeleteTask = (id) => {
-  //     setData(data.filter(task => task.id !== id));
-  // };
+  const handleDeleteTask = (id) => {
+    deleteTask(id).then(() => setRefreshTasks(true));
+  };
 
   return (
     <div>
@@ -145,7 +114,11 @@ const HomePage = () => {
         </Button>
       </Box>
       <header>
-        <TaskTable tasks={filteredData()} filter={filter} />
+        <TaskTable
+          tasks={filteredData()}
+          filter={filter}
+          deleteTask={handleDeleteTask}
+        />
       </header>
     </div>
   );

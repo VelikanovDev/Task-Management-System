@@ -1,13 +1,13 @@
 import "./App.css";
 import * as React from "react";
-import HomePage from "./components/pages/HomePage";
+import HomePage from "./pages/HomePage";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import LoginPage from "./components/pages/LoginPage";
-import RegisterPage from "./components/pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import { useState } from "react";
 
 function App() {
