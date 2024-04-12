@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Task from "./Task";
 
 const TaskTable = ({ tasks, filter, updateTask, deleteTask, changeState }) => {
   return (
@@ -34,41 +35,13 @@ const TaskTable = ({ tasks, filter, updateTask, deleteTask, changeState }) => {
         </TableHead>
         <TableBody>
           {tasks.map((task) => (
-            <TableRow key={task._id} align="center">
-              {filter !== "assignedByMe" && (
-                <TableCell align="center">
-                  <input
-                    checked={task.isDone}
-                    type={"checkbox"}
-                    disabled={filter === "all"}
-                    onChange={() =>
-                      changeState(task._id, { ...task, isDone: !task.isDone })
-                    }
-                  />
-                </TableCell>
-              )}
-              <TableCell align="center">{task.description}</TableCell>
-              <TableCell align="center">{task.assignedTo}</TableCell>
-              <TableCell align="center">{task.assignedBy}</TableCell>
-              <TableCell align="center">{task.priority}</TableCell>
-              <TableCell align="center">{task.due}</TableCell>
-              {filter === "assignedByMe" && (
-                <TableCell align="center">
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => updateTask(task)}
-                  >
-                    <EditIcon color="primary" />
-                  </IconButton>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => deleteTask(task._id)}
-                  >
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </TableCell>
-              )}
-            </TableRow>
+            <Task
+              filter={filter}
+              task={task}
+              updateTask={updateTask}
+              deleteTask={deleteTask}
+              changeState={changeState}
+            />
           ))}
         </TableBody>
       </Table>
