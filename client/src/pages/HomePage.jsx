@@ -11,6 +11,7 @@ import {
   fetchTasks,
   updateTask,
 } from "../services/TaskService";
+import { logout } from "../services/UserService";
 
 const HomePage = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -62,11 +63,18 @@ const HomePage = () => {
     setModalVisible(true);
   };
 
+  const handleLogout = () => {
+    logout().then((r) => {
+      navigate("/login", { replace: true });
+      window.location.reload();
+    });
+  };
+
   return (
     <div>
       <div className={"loggedInUser"}>
         <p>Username</p>
-        <Button variant="contained" onClick={() => navigate("/login")}>
+        <Button variant="contained" onClick={() => handleLogout()}>
           Logout
         </Button>
       </div>
