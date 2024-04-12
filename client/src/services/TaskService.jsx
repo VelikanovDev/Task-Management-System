@@ -2,9 +2,17 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3001";
 
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true, // Important for sessions to work
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 export const fetchTasks = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/allTasks`);
+    const response = await axiosInstance.get(`${API_BASE_URL}/api/allTasks`);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch tasks:", error);
@@ -13,17 +21,22 @@ export const fetchTasks = async () => {
 };
 
 export const createTask = async (newTask) => {
-  const response = await axios.post(`${API_BASE_URL}/api/newTask`, newTask);
+  const response = await axiosInstance.post(
+    `${API_BASE_URL}/api/newTask`,
+    newTask,
+  );
   return await response.data;
 };
 
 export const deleteTask = async (id) => {
-  const response = await axios.delete(`${API_BASE_URL}/api/deleteTask/${id}`);
+  const response = await axiosInstance.delete(
+    `${API_BASE_URL}/api/deleteTask/${id}`,
+  );
   return await response.data;
 };
 
 export const updateTask = async (id, task) => {
-  const response = await axios.put(
+  const response = await axiosInstance.put(
     `${API_BASE_URL}/api/updateTask/${id}`,
     task,
   );
