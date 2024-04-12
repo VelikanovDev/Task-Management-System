@@ -5,7 +5,12 @@ import TaskForm from "../components/TaskForm";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TaskTable from "../components/TaskTable";
 import { useNavigate } from "react-router-dom";
-import { createTask, deleteTask, fetchTasks } from "../services/TaskService";
+import {
+  createTask,
+  deleteTask,
+  fetchTasks,
+  updateTask,
+} from "../services/TaskService";
 
 const HomePage = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -39,22 +44,22 @@ const HomePage = () => {
   };
 
   const handleCreateTask = (newTask) => {
-    // setTasks((prevData) => {
-    //   return [...prevData, newTask];
-    // });
     createTask(newTask).then(() => setModalVisible(false));
     setRefreshTasks(true);
-    // setModalVisible(false);
   };
 
-  // const handleEditTask = (id) => {
-  //     const task = data.find(t => t.id === id);
-  //     setSelectedTask(task);
-  //     setModalVisible(true);
-  // };
-  //
   const handleDeleteTask = (id) => {
     deleteTask(id).then(() => setRefreshTasks(true));
+  };
+
+  const handleUpdateTask = (id, task) => {
+    updateTask(id, task).then(() => setModalVisible(false));
+    setRefreshTasks(true);
+  };
+
+  const handleOpenEditModal = (task) => {
+    setSelectedTask(task);
+    setModalVisible(true);
   };
 
   return (
@@ -99,7 +104,11 @@ const HomePage = () => {
         </Button>
       </ButtonGroup>
       <MyModal visible={modalVisible} setVisible={setModalVisible}>
-        <TaskForm create={handleCreateTask} />
+        <TaskForm
+          create={handleCreateTask}
+          update={handleUpdateTask}
+          task={selectedTask}
+        />
       </MyModal>
       <Box mt={2} mb={2}>
         <Button
@@ -117,7 +126,9 @@ const HomePage = () => {
         <TaskTable
           tasks={filteredData()}
           filter={filter}
+          updateTask={handleOpenEditModal}
           deleteTask={handleDeleteTask}
+          changeState={handleUpdateTask}
         />
       </header>
     </div>

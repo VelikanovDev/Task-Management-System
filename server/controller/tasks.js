@@ -21,7 +21,17 @@ module.exports.deleteTask = async (req, res) => {
   const { id } = req.params;
   const deletedComment = await Task.findByIdAndDelete(id);
   if (!deletedComment) {
-    throw new ExpressError("Document not found", 404);
+    throw new ExpressError("Task not found", 404);
   }
   res.status(204).json([]);
+};
+
+module.exports.updateTask = async (req, res) => {
+  const { id } = req.params;
+  const { _id, ...task } = req.body;
+  const updatedTask = await Task.findByIdAndUpdate(id, task);
+  if (!updatedTask) {
+    throw new ExpressError("Task not found", 404);
+  }
+  res.status(200).json(updatedTask);
 };

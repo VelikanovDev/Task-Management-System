@@ -10,7 +10,7 @@ import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const TaskTable = ({ tasks, filter, deleteTask }) => {
+const TaskTable = ({ tasks, filter, updateTask, deleteTask, changeState }) => {
   return (
     <TableContainer
       component={Paper}
@@ -37,7 +37,14 @@ const TaskTable = ({ tasks, filter, deleteTask }) => {
             <TableRow key={task._id} align="center">
               {filter !== "assignedByMe" && (
                 <TableCell align="center">
-                  <input type={"checkbox"} disabled={filter === "all"} />
+                  <input
+                    checked={task.isDone}
+                    type={"checkbox"}
+                    disabled={filter === "all"}
+                    onChange={() =>
+                      changeState(task._id, { ...task, isDone: !task.isDone })
+                    }
+                  />
                 </TableCell>
               )}
               <TableCell align="center">{task.description}</TableCell>
@@ -49,7 +56,7 @@ const TaskTable = ({ tasks, filter, deleteTask }) => {
                 <TableCell align="center">
                   <IconButton
                     aria-label="edit"
-                    onClick={() => console.log("Edit btn")}
+                    onClick={() => updateTask(task)}
                   >
                     <EditIcon color="primary" />
                   </IconButton>

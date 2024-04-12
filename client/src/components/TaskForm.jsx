@@ -65,7 +65,7 @@ const TaskForm = ({ create, update, task }) => {
     };
 
     if (task) {
-      update(updatedTask);
+      update(task._id, updatedTask);
     } else {
       create(updatedTask);
     }

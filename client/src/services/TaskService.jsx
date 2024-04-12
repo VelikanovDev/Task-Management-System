@@ -21,3 +21,11 @@ export const deleteTask = async (id) => {
   const response = await axios.delete(`${API_BASE_URL}/api/deleteTask/${id}`);
   return await response.data;
 };
+
+export const updateTask = async (id, task) => {
+  const response = await axios.put(
+    `${API_BASE_URL}/api/updateTask/${id}`,
+    task,
+  );
+  return response.data;
+};
