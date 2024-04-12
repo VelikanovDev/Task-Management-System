@@ -36,6 +36,7 @@ const TaskTable = ({ tasks, filter, updateTask, deleteTask, changeState }) => {
         <TableBody>
           {tasks.map((task) => (
             <Task
+              key={task._id}
               filter={filter}
               task={task}
               updateTask={updateTask}
