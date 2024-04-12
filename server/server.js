@@ -1,18 +1,44 @@
 const mongoose = require("mongoose").default;
 const cors = require("cors");
 const express = require("express");
+const session = require("express-session");
 const TaskSchema = require("./models/task");
 const UserSchema = require("./models/user");
 const seedTasksDB = require("./seeds/seed-tasks");
 const seedUsersDB = require("./seeds/seed-users");
 const taskRouter = require("./routes/tasks");
+const userRouter = require("./routes/users");
 
 const app = express();
 const PORT = 3001;
+const secret = "this is my biggest secret";
+const sessionConfiguration = {
+  secret,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  },
+};
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // or your client's URL
+    credentials: true, // this allows the server to accept the client's cookies
+  }),
+);
+app.use(session(sessionConfiguration));
+
+app.use((req, res, next) => {
+  res.locals.currentUser = req.session.userId;
+  next();
+});
+
 app.use("/api", taskRouter); // Mount the router on the `/api` path
+app.use("/", userRouter); // Mount the router on the `/api` path
 
 // Connect to MongoDB
 mongoose
