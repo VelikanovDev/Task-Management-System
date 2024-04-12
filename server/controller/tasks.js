@@ -35,3 +35,11 @@ module.exports.updateTask = async (req, res) => {
   }
   res.status(200).json(updatedTask);
 };
+
+module.exports.checkSession = async (req, res) => {
+  if (req.session.userId) {
+    res.status(200).json({ isLoggedIn: true });
+  } else {
+    res.status(200).json({ isLoggedIn: false });
+  }
+};
