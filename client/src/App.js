@@ -8,18 +8,31 @@ import {
 } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { checkSession } from "./services/UserService";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const initSessionCheck = async () => {
+      const loggedIn = await checkSession();
+      setIsLoggedIn(loggedIn);
+    };
+
+    initSessionCheck().then();
+  }, []);
+
   const router = createBrowserRouter([
     {
       path: "/",
-      element: isLoggedIn ? <HomePage /> : <Navigate to="/login" replace />,
+      element: isLoggedIn ? <HomePage /> : <Navigate to="/login" />,
     },
     {
       path: "/login",
-      element: <LoginPage />,
+      element: (
+        <LoginPage isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
+      ),
     },
     {
       path: "/register",
