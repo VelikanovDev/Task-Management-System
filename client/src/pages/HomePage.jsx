@@ -11,13 +11,16 @@ import {
   fetchTasks,
   updateTask,
 } from "../services/TaskService";
-import { logout } from "../services/UserService";
+import { allUsers, logout } from "../services/UserService";
+import { useUser } from "../context/UserProvider";
 
 const HomePage = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
   const [refreshTasks, setRefreshTasks] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [users, setUsers] = useState([]);
+  const { user } = useUser();
 
   useEffect(() => {
     fetchTasks()
@@ -30,6 +33,16 @@ const HomePage = () => {
       });
   }, [refreshTasks]);
 
+  useEffect(() => {
+    allUsers()
+      .then((data) => {
+        setUsers(data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch users:", error);
+      });
+  }, []);
+
   const [filter, setFilter] = useState("all"); // 'all', 'assignedByMe', 'myTasks'
   const navigate = useNavigate();
 
@@ -37,10 +50,9 @@ const HomePage = () => {
     if (filter === "all") {
       return tasks;
     } else if (filter === "assignedByMe") {
-      // Assuming tasks not assigned to Alice are assigned by Alice
-      return tasks.filter((task) => task.assignedTo !== "Alice");
+      return tasks.filter((task) => task.assignedBy === user.username);
     } else if (filter === "myTasks") {
-      return tasks.filter((task) => task.assignedTo === "Alice");
+      return tasks.filter((task) => task.assignedTo === user.username);
     }
   };
 
@@ -73,7 +85,7 @@ const HomePage = () => {
   return (
     <div>
       <div className={"loggedInUser"}>
-        <p>Username</p>
+        <p>{user.username}</p>
         <Button variant="contained" onClick={() => handleLogout()}>
           Logout
         </Button>
@@ -116,6 +128,8 @@ const HomePage = () => {
           create={handleCreateTask}
           update={handleUpdateTask}
           task={selectedTask}
+          loggedInUser={user}
+          allUsers={users}
         />
       </MyModal>
       <Box mt={2} mb={2}>
