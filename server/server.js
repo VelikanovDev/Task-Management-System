@@ -26,7 +26,7 @@ const sessionConfiguration = {
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000", // or your client's URL
+    origin: "http://localhost:3000",
     credentials: true, // this allows the server to accept the client's cookies
   }),
 );
@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api", taskRouter); // Mount the router on the `/api` path
-app.use("/", userRouter); // Mount the router on the `/api` path
+app.use("/", userRouter); // Mount the router on the `/` path
 
 // Connect to MongoDB
 mongoose
@@ -48,14 +48,12 @@ mongoose
   })
   .then(() => {
     console.log("DB connected");
-    checkAndSeedDatabase(); // Function to check data and seed if necessary
+    checkAndSeedDatabase().then(); // Function to check data and seed if necessary
   })
   .catch((err) => console.log("Error connecting to MongoDB:", err));
 
 // Function to check data and seed if necessary
 async function checkAndSeedDatabase() {
-  // const Task = mongoose.model("Task", TaskSchema); // Ensure Task is the correct model
-
   const countTask = await TaskSchema.countDocuments();
   const countUsers = await UserSchema.countDocuments();
 
