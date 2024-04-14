@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { register } from "../services/UserService";
-import { Alert } from "@mui/lab";
+import { Alert } from "@mui/material";
 
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
@@ -16,22 +16,26 @@ const RegisterPage = () => {
     e.preventDefault(); // Prevent the form from being submitted traditionally
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
+      setSuccess(false);
       return;
     }
 
     if (username === "" || password === "" || confirmPassword === "") {
       setError("Username and password are required");
+      setSuccess(false);
       return;
     }
 
     const result = await register(username, password, confirmPassword);
     if (result && result.success) {
       setSuccess(true);
-      setError("");
-      navigate("/login", { replace: true });
-      window.location.reload();
+      setError(null);
+      setUsername("");
+      setPassword("");
+      setConfirmPassword("");
     } else {
-      setError(result.message || "Registration failed. Please try again.");
+      console.log(result.error);
+      setError(result.error || "Registration failed. Please try again.");
       setSuccess(false);
     }
   };
@@ -44,7 +48,6 @@ const RegisterPage = () => {
             <Alert
               severity="error"
               style={{ marginTop: "20px", marginBottom: "20px" }}
-              fullWidth
             >
               {error}
             </Alert>
@@ -54,7 +57,7 @@ const RegisterPage = () => {
               severity="success"
               style={{ marginTop: "20px", marginBottom: "20px" }}
             >
-              Registration successful! Redirecting...
+              Registration successful!
             </Alert>
           )}
           <div style={{ marginBottom: "10px" }}>
@@ -62,6 +65,8 @@ const RegisterPage = () => {
               id="username"
               label="Username"
               variant="outlined"
+              value={username}
+              autoComplete={"username"}
               onChange={(e) => setUsername(e.target.value)}
               fullWidth
             />
@@ -72,6 +77,8 @@ const RegisterPage = () => {
               type="password"
               label="Password"
               variant="outlined"
+              value={password}
+              autoComplete={"new-password"}
               onChange={(e) => setPassword(e.target.value)}
               fullWidth
             />
@@ -82,6 +89,8 @@ const RegisterPage = () => {
               type="password"
               label="Confirm password"
               variant="outlined"
+              value={confirmPassword}
+              autoComplete={"new-password"}
               onChange={(e) => setConfirmPassword(e.target.value)}
               fullWidth
             />
