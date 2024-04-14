@@ -1,32 +1,50 @@
 import React, { useEffect, useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { login } from "../services/UserService";
+import { checkSession, login } from "../services/UserService";
+import { useUser } from "../context/UserProvider";
+import { Alert } from "@mui/material";
 
-const LoginPage = ({ isLoggedIn, setIsLoggedIn }) => {
+const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const { setUser, isLoggedIn, setIsLoggedIn } = useUser();
 
-  // This useEffect will run whenever isLoggedIn changes.
+  // Redirect if already logged in
   useEffect(() => {
-    console.log("isLoggedIn state updated to: ", isLoggedIn);
     if (isLoggedIn) {
       navigate("/");
     }
   }, [isLoggedIn, navigate]);
 
+  useEffect(() => {
+    const initSessionCheck = async () => {
+      const sessionInfo = await checkSession();
+      setUser(sessionInfo.user);
+      setIsLoggedIn(sessionInfo.isLoggedIn);
+    };
+
+    initSessionCheck().then();
+  }, [isLoggedIn, setIsLoggedIn, setUser]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const result = await login(username, password);
-      if (result.success) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
+
+    if (username === "" || password === "") {
+      setError("Username and password are required");
+      return;
+    }
+
+    const result = await login(username, password);
+    if (result.success) {
+      setError("");
+      setUser(result.user);
+      setIsLoggedIn(true);
+      navigate("/");
+    } else {
+      setError(result.message);
     }
   };
 
@@ -34,11 +52,20 @@ const LoginPage = ({ isLoggedIn, setIsLoggedIn }) => {
     <div>
       <h2>Login</h2>
       <form className={"authForm"} onSubmit={handleSubmit}>
+        {error && (
+          <Alert
+            severity="error"
+            style={{ marginTop: "20px", marginBottom: "20px" }}
+          >
+            {error}
+          </Alert>
+        )}
         <div style={{ marginBottom: "10px" }}>
           <TextField
             id="login"
             label="Username"
             variant="outlined"
+            autoComplete={"username"}
             onChange={(e) => setUsername(e.target.value)}
             fullWidth
           />
@@ -49,6 +76,7 @@ const LoginPage = ({ isLoggedIn, setIsLoggedIn }) => {
             type="password"
             label="Password"
             variant="outlined"
+            autoComplete={"new-password"}
             onChange={(e) => setPassword(e.target.value)}
             fullWidth
           />
