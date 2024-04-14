@@ -11,8 +11,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
+import { useUser } from "../context/UserProvider";
 
-const TaskForm = ({ create, update, task }) => {
+const TaskForm = ({ create, update, task, allUsers }) => {
   const initialTaskState = {
     description: "",
     isDone: false,
@@ -24,6 +25,7 @@ const TaskForm = ({ create, update, task }) => {
 
   const [newTask, setNewTask] = useState(initialTaskState);
   const [inputError, setInputError] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     if (task) {
@@ -59,7 +61,7 @@ const TaskForm = ({ create, update, task }) => {
       isDone: false,
       description: newTask.description,
       assignedTo: newTask.assignedTo,
-      assignedBy: "Alice",
+      assignedBy: user.username,
       priority: newTask.priority,
       due: newTask.due,
     };
@@ -98,17 +100,36 @@ const TaskForm = ({ create, update, task }) => {
           />
         </div>
         <div style={{ marginBottom: "10px" }}>
-          <TextField
-            id="assigned-to"
-            label="Assigned to"
-            variant="outlined"
-            value={newTask.assignedTo}
-            onChange={(e) =>
-              setNewTask({ ...newTask, assignedTo: e.target.value })
-            }
-            fullWidth
-          />
+          <FormControl variant="outlined" fullWidth>
+            <InputLabel id="demo-simple-select-outlined-label">
+              Assigned To
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select-label"
+              value={newTask.assignedTo}
+              onChange={(e) =>
+                setNewTask({ ...newTask, assignedTo: e.target.value })
+              }
+              label="Priority"
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              {allUsers.map((u) => {
+                if (u.username !== user.username) {
+                  return (
+                    <MenuItem key={u._id} value={u.username}>
+                      {u.username}
+                    </MenuItem>
+                  );
+                }
+                return null;
+              })}
+            </Select>
+          </FormControl>
         </div>
+
         <div style={{ marginBottom: "10px" }}>
           <FormControl variant="outlined" fullWidth>
             <InputLabel id="demo-simple-select-outlined-label">
@@ -138,7 +159,7 @@ const TaskForm = ({ create, update, task }) => {
               label="Due Date"
               value={newTask.due ? dayjs(newTask.due) : null}
               onChange={handleDateChange}
-              renderInput={(params) => <TextField {...params} />}
+              textField={(params) => <TextField {...params} />}
             />
           </FormControl>
         </div>
