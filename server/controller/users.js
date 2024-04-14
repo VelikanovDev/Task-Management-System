@@ -7,7 +7,6 @@ module.exports.register = async (req, res, next) => {
   try {
     // Check if a user with the same username already exists
     const existingUser = await User.findOne({ username });
-    console.log("Here");
     if (existingUser) {
       return res.status(409).json({ message: "Username already in use." });
     }
@@ -17,7 +16,7 @@ module.exports.register = async (req, res, next) => {
     await user.save();
 
     res.status(201).json({
-      message: "User created successfully.",
+      success: true,
       user: { id: user._id, username: user.username },
     });
     next();
@@ -27,13 +26,16 @@ module.exports.register = async (req, res, next) => {
 };
 
 module.exports.login = async (req, res) => {
-  const { _id } = req.user;
+  const { _id, username } = req.user;
   req.session.userId = _id;
-  res.status(200).json("Login successful");
+  req.session.username = username;
+  res.status(200).json({
+    message: "Login successful",
+    user: { id: _id, username: username },
+  });
 };
 
 module.exports.logout = async (req, res, next) => {
-  console.log("deleting session cookie");
   req.session.userId = null;
   req.session.save((err) => {
     if (err) next(err);
@@ -42,4 +44,27 @@ module.exports.logout = async (req, res, next) => {
       res.status(200).json({ message: "Logout successful" });
     });
   });
+};
+
+module.exports.checkSession = async (req, res) => {
+  if (req.session.userId) {
+    res.status(200).json({
+      isLoggedIn: true,
+      user: {
+        id: req.session.userId,
+        username: req.session.username,
+      },
+    });
+  } else {
+    res.status(200).json({
+      isLoggedIn: false,
+      user: null, // No user information available
+    });
+  }
+};
+
+module.exports.allUsers = async (req, res, next) => {
+  const users = await User.find({});
+  res.status(200).json(users);
+  next();
 };
