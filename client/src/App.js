@@ -1,38 +1,25 @@
 import "./App.css";
 import * as React from "react";
 import HomePage from "./pages/HomePage";
-import {
-  createBrowserRouter,
-  Navigate,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import { useEffect, useState } from "react";
-import { checkSession } from "./services/UserService";
+import { UserProvider } from "./context/UserProvider";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const initSessionCheck = async () => {
-      const loggedIn = await checkSession();
-      setIsLoggedIn(loggedIn);
-    };
-
-    initSessionCheck().then();
-  }, []);
-
   const router = createBrowserRouter([
     {
       path: "/",
-      element: isLoggedIn ? <HomePage /> : <Navigate to="/login" />,
+      element: (
+        <ProtectedRoute>
+          <HomePage />
+        </ProtectedRoute>
+      ),
     },
     {
       path: "/login",
-      element: (
-        <LoginPage isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />
-      ),
+      element: <LoginPage />,
     },
     {
       path: "/register",
@@ -41,10 +28,12 @@ function App() {
   ]);
 
   return (
-    <div className="App">
-      <h1>Task Management System</h1>
-      <RouterProvider router={router} />
-    </div>
+    <UserProvider>
+      <div className="App">
+        <h1>Task Management System</h1>
+        <RouterProvider router={router} />
+      </div>
+    </UserProvider>
   );
 }
 
