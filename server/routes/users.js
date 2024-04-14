@@ -3,7 +3,7 @@ const express = require("express");
 const { register, login, logout, allUsers } = require("../controller/users");
 const router = express.Router();
 const { areCredentialsVerified } = require("../middleware/authentication");
-const { checkSession } = require("../controller/tasks");
+const { checkSession } = require("../controller/users");
 
 router.route("/register").post(validateUser, register);
 
