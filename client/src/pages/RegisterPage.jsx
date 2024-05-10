@@ -98,13 +98,13 @@ const RegisterPage = () => {
           <Button
             type="submit"
             variant="contained"
-            style={{ display: "block", margin: "5px auto" }}
+            style={{ display: "block", margin: "5px auto", width: "150px" }}
           >
             Submit
           </Button>
           <Button
             variant="contained"
-            style={{ display: "block", margin: "5px auto" }}
+            style={{ display: "block", margin: "5px auto", width: "150px" }}
             onClick={() => navigate("/login")}
           >
             Back to login
